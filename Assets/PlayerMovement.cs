@@ -79,15 +79,7 @@ public class PlayerMovement : MonoBehaviour
             characterController.height / 2f + 0.5f))
         {
             // Make movement follow the slope.
-            movement = Vector3.ProjectOnPlane(
-                movement,
-                hit.normal
-            );
-
-            if (movement.sqrMagnitude > 0.001f)
-            {
-                movement = movement.normalized * currentSpeed;
-            }
+           
 
             // Very small downward force to stay attached.
             verticalVelocity = verticalstick;
