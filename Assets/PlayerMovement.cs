@@ -70,7 +70,6 @@ public class PlayerMovement : MonoBehaviour
 
         Vector3 movement = inputDirection * currentSpeed;
 
-        // Detect the ground.
         if (Physics.SphereCast(
             transform.position,
             characterController.radius * 0.9f,
@@ -78,15 +77,11 @@ public class PlayerMovement : MonoBehaviour
             out RaycastHit hit,
             characterController.height / 2f + 0.5f))
         {
-            // Make movement follow the slope.
-           
 
-            // Very small downward force to stay attached.
             verticalVelocity = verticalstick;
         }
         else
         {
-            // Actual airborne gravity.
             verticalVelocity += gravity * Time.deltaTime;
         }
 
@@ -125,15 +120,12 @@ public class PlayerMovement : MonoBehaviour
 
             shakeTimer += shakeSpeed * Time.deltaTime;
 
-            // Up/down movement
             float verticalShake =
                 Mathf.Sin(shakeTimer) * shakeAmount;
 
-            // Left/right movement
             float horizontalShake =
                 Mathf.Cos(shakeTimer * 0.5f) * shakeAmount;
 
-            // Left/right camera rotation
             float rotationShake =
                 Mathf.Sin(shakeTimer * 0.5f) * rotationAmount;
 
@@ -142,24 +134,11 @@ public class PlayerMovement : MonoBehaviour
             targetPosition.y += verticalShake;
             targetPosition.x += horizontalShake;
 
-            playerCamera.localPosition = Vector3.Lerp(
-                playerCamera.localPosition,
-                targetPosition,
-                shakeSmoothness * Time.deltaTime
-            );
+            playerCamera.localPosition = Vector3.Lerp(playerCamera.localPosition,targetPosition,shakeSmoothness * Time.deltaTime);
 
-            // Add left/right tilt
-            Quaternion targetRotation = Quaternion.Euler(
-                verticalRotation,
-                0f,
-                rotationShake
-            );
+            Quaternion targetRotation = Quaternion.Euler(verticalRotation,0f,rotationShake);
 
-            playerCamera.localRotation = Quaternion.Slerp(
-                playerCamera.localRotation,
-                targetRotation,
-                shakeSmoothness * Time.deltaTime
-            );
+            playerCamera.localRotation = Quaternion.Slerp( playerCamera.localRotation,targetRotation,shakeSmoothness * Time.deltaTime);
         }
         else
         {
@@ -171,17 +150,9 @@ public class PlayerMovement : MonoBehaviour
                 shakeSmoothness * Time.deltaTime
             );
 
-            // Return the camera to its normal rotation.
-            Quaternion targetRotation = Quaternion.Euler(
-                verticalRotation,
-                0f,
-                0f
-            );
+            Quaternion targetRotation = Quaternion.Euler(verticalRotation,0f, 0f);
 
-            playerCamera.localRotation = Quaternion.Slerp(
-                playerCamera.localRotation,
-                targetRotation,
-                shakeSmoothness * Time.deltaTime
+            playerCamera.localRotation = Quaternion.Slerp(playerCamera.localRotation,targetRotation,shakeSmoothness * Time.deltaTime
             );
         }
     }
@@ -191,22 +162,13 @@ public class PlayerMovement : MonoBehaviour
         float mouseX = Input.GetAxis("Mouse X");
         float mouseY = Input.GetAxis("Mouse Y");
 
-        transform.Rotate(
-            Vector3.up,
-            mouseX * horizontalCameraSpeed * Time.deltaTime
-        );
+        transform.Rotate(Vector3.up,mouseX * horizontalCameraSpeed * Time.deltaTime);
 
-        verticalRotation -=
-            mouseY * verticalCameraSpeed * Time.deltaTime;
+        verticalRotation -= mouseY * verticalCameraSpeed * Time.deltaTime;
 
-        verticalRotation = Mathf.Clamp(
-            verticalRotation,
-            minVerticalAngle,
-            maxVerticalAngle
-        );
+        verticalRotation = Mathf.Clamp(verticalRotation,minVerticalAngle,maxVerticalAngle);
 
-        playerCamera.localRotation =
-            Quaternion.Euler(verticalRotation, 0f, 0f);
+        playerCamera.localRotation =Quaternion.Euler(verticalRotation, 0f, 0f);
     }
 }
 

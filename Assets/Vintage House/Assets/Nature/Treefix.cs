@@ -8,25 +8,31 @@ using UnityEditor;
 public class Treefix : MonoBehaviour
 {
 #if UNITY_EDITOR
-    [ContextMenu("Recalculate Tree Bounds")]
-    void Recalculate()
+    [ContextMenu("Fix Bounds For All Trees")]
+    void FixAllBounds()
     {
-        MeshFilter[] filters = GetComponentsInChildren<MeshFilter>();
+        MeshFilter[] filters = GetComponentsInChildren<MeshFilter>(true);
+
+        int fixedCount = 0;
 
         foreach (MeshFilter filter in filters)
         {
-            if (filter.sharedMesh == null)
+            Mesh mesh = filter.sharedMesh;
+
+            if (mesh == null)
                 continue;
 
-            // Make a unique mesh copy so the imported asset isn't modified.
-            Mesh mesh = Instantiate(filter.sharedMesh);
-            mesh.name = filter.sharedMesh.name + "_FixedBounds";
             mesh.RecalculateBounds();
 
-            filter.sharedMesh = mesh;
+            EditorUtility.SetDirty(mesh);
+
+            fixedCount++;
         }
 
-        Debug.Log("Tree mesh bounds recalculated.");
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
+
+        Debug.Log($"Finished! Recalculated bounds for {fixedCount} meshes.");
     }
 #endif
 }

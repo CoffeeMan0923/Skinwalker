@@ -320,8 +320,8 @@ Mesh:
     firstVertex: 0
     vertexCount: 70
     localAABB:
-      m_Center: {x: -0.17101127, y: -0.6, z: 0.17544451}
-      m_Extent: {x: 1.1136401, y: 0, z: 0.85806084}
+      m_Center: {x: NaN, y: NaN, z: NaN}
+      m_Extent: {x: -Infinity, y: -Infinity, z: -Infinity}
   - serializedVersion: 2
     firstByte: 336
     indexCount: 420
@@ -464,8 +464,8 @@ Mesh:
       m_BitSize: 0
     m_UVInfo: 0
   m_LocalAABB:
-    m_Center: {x: -0.20858502, y: 0.5410728, z: 0.11548698}
-    m_Extent: {x: 3.1888936, y: 1.1410728, z: 2.9763331}
+    m_Center: {x: -0.20858502, y: 0.72078794, z: 0.11548698}
+    m_Extent: {x: 3.1888936, y: 0.96135765, z: 2.9763331}
   m_MeshUsageFlags: 0
   m_CookingOptions: 30
   m_BakedConvexCollisionMesh: 
