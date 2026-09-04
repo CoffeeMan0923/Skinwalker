@@ -9,6 +9,8 @@ public class PlayerMovement : MonoBehaviour
     [Header("Movement")]
     public float movementSpeed = 5f;
     public int runSpeed = 10;
+    public bool CanRun = true;
+    bool isRunning;
 
     [Header("Camera Shake")]
     [SerializeField] private float walkShakeAmount = 0.03f;
@@ -48,6 +50,8 @@ public class PlayerMovement : MonoBehaviour
     }
     private void FixedUpdate()
     {
+        if (CanRun) { isRunning = Input.GetKey(KeyCode.LeftShift); }
+        else { isRunning = false; }
         Move();
         Look();
         CameraShake();
@@ -64,7 +68,7 @@ public class PlayerMovement : MonoBehaviour
 
         inputDirection = Vector3.ClampMagnitude(inputDirection, 1f);
 
-        float currentSpeed = Input.GetKey(KeyCode.LeftShift)
+        float currentSpeed = isRunning
             ? runSpeed
             : movementSpeed;
 
@@ -104,7 +108,6 @@ public class PlayerMovement : MonoBehaviour
 
         if (characterController.isGrounded && isMoving)
         {
-            bool isRunning = Input.GetKey(KeyCode.LeftShift);
 
             float shakeAmount = isRunning
                 ? runShakeAmount
@@ -168,7 +171,7 @@ public class PlayerMovement : MonoBehaviour
 
         verticalRotation = Mathf.Clamp(verticalRotation,minVerticalAngle,maxVerticalAngle);
 
-        playerCamera.localRotation =Quaternion.Euler(verticalRotation, 0f, 0f);
+        playerCamera.localRotation = Quaternion.Euler(verticalRotation, 0f, 0f);
     }
 }
 
