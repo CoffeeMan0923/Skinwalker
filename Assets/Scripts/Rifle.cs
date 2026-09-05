@@ -13,11 +13,15 @@ public class Rifle : MonoBehaviour
     [SerializeField] private int maxAmmo = 6;
     [SerializeField] private int currentAmmo = 6;
     [SerializeField] private bool chambered;
+    bool reloading = false;
 
     [Header("SFX")]
     [SerializeField] private AudioClip fireSFX;
+    [SerializeField] private AudioClip reloadSFX;
     [SerializeField] private AudioClip noAmmoSFX;
     [SerializeField] private AudioSource audioSource;
+
+    [SerializeField] Animator animator;
 
     private Riflesway riflesway;
     void Start()
@@ -31,6 +35,7 @@ public class Rifle : MonoBehaviour
 
     void Reload()
     {
+        reloading = false;
         chambered = true;
     }
 
@@ -38,8 +43,7 @@ public class Rifle : MonoBehaviour
     {
         chambered = false;
         currentAmmo--;
-        audioSource.clip = fireSFX;
-        audioSource.Play();
+        audioSource.PlayOneShot(fireSFX);
         Vector3 origin = transform.position;
         Vector3 direction = transform.forward;
 
@@ -78,11 +82,17 @@ public class Rifle : MonoBehaviour
             riflesway.IsAiming(false);
         }
 
-        if (Input.GetKeyDown(KeyCode.R) && chambered == false && currentAmmo > 0)
+        if (Input.GetKeyDown(KeyCode.R) && chambered == false && currentAmmo > 0 && reloading == false)
         {
-            Reload();
+            reloading = true;
+            animator.SetBool("Reload",true);
+            audioSource.PlayOneShot(reloadSFX);
+            Invoke("Reload", 1.34f);
         }
-
+        else
+        {
+            animator.SetBool("Reload", false);
+        }
         if (Input.GetMouseButtonDown(0) && chambered == true)
         {
             FireRaycast();
