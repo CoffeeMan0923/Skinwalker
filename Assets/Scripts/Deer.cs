@@ -10,6 +10,7 @@ public class Deer : MonoBehaviour
     [SerializeField] private NavMeshAgent agent;
     [SerializeField] private float distance;
     private bool switchingWaypoint = false;
+    private bool moveon;
 
     private int randomNum;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -25,8 +26,13 @@ public class Deer : MonoBehaviour
     void Update()
     {
         distance = Vector3.Distance(this.gameObject.transform.position, targetWaypoint.transform.position);
-        if(distance <= 2 && switchingWaypoint == false)
+        if (distance <= 2)
         {
+            Invoke("MoveOn", Random.Range(4,8));
+        }
+        if(distance <= 2 && switchingWaypoint == false && moveon)
+        {
+            moveon = false;
             switchingWaypoint = true;
             SwitchWaypoint();
         }
@@ -48,8 +54,13 @@ public class Deer : MonoBehaviour
     {
         agent.destination = targetWaypoint.transform.position;
     }
+    void MoveOn()
+    {
+        moveon = true;
+    }
     public void Damage()
     {
         Destroy(gameObject);
     }
+    
 }

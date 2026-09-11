@@ -1,56 +1,86 @@
-using System.Collections;
+
 using UnityEngine;
 
 public class Riflesway : MonoBehaviour
 {
-    private Transform riflePlaceholder;
     [SerializeField] private Transform noAimPlacenholder;
     [SerializeField] private Transform AimingPlaceholder;
 
+    [Header("Aim Transition")]
+    [SerializeField] private float aimTransitionSpeed = 5f;
+
     [Header("Position Sway")]
-    [SerializeField] private float followSpeed = 12f;
+    [SerializeField] private float followSpeed = 5f;
     [SerializeField] private float maxDistance = 0.15f;
 
     [Header("Rotation Sway")]
-    [SerializeField] private float rotationFollowSpeed = 12f;
+    [SerializeField] private float rotationFollowSpeed = 180f;
     [SerializeField] private float maxRotationAngle = 5f;
 
     private PlayerMovement playerMovement;
 
+    private bool isAiming;
+    private float aimBlend;
+
     void Start()
     {
         playerMovement = Object.FindAnyObjectByType<PlayerMovement>();
-        riflePlaceholder = noAimPlacenholder;
+
+        aimBlend = 0f;
+
+        transform.position = noAimPlacenholder.position;
+        transform.rotation = noAimPlacenholder.rotation;
     }
+
     void FixedUpdate()
     {
-        if (riflePlaceholder == null)
+        if (noAimPlacenholder == null || AimingPlaceholder == null)
             return;
 
-        Vector3 targetPosition = riflePlaceholder.position;
+        float targetAimBlend = isAiming ? 1f : 0f;
 
-        transform.position = Vector3.Lerp(
+        aimBlend = Mathf.MoveTowards(
+            aimBlend,
+            targetAimBlend,
+            aimTransitionSpeed * Time.fixedDeltaTime
+        );
+
+        Vector3 targetPosition = Vector3.Lerp(
+            noAimPlacenholder.position,
+            AimingPlaceholder.position,
+            aimBlend
+        );
+
+        Quaternion targetRotation = Quaternion.Slerp(
+            noAimPlacenholder.rotation,
+            AimingPlaceholder.rotation,
+            aimBlend
+        );
+
+
+        transform.position = Vector3.MoveTowards(
             transform.position,
             targetPosition,
             followSpeed * Time.fixedDeltaTime
         );
 
-        Vector3 offset = transform.position - targetPosition;
+        Vector3 positionOffset = transform.position - targetPosition;
 
-        if (offset.magnitude > maxDistance)
+        if (positionOffset.magnitude > maxDistance)
         {
             transform.position =
-                targetPosition + offset.normalized * maxDistance;
+                targetPosition + positionOffset.normalized * maxDistance;
         }
 
-        transform.rotation = Quaternion.Slerp(
+
+        transform.rotation = Quaternion.RotateTowards(
             transform.rotation,
-            riflePlaceholder.rotation,
+            targetRotation,
             rotationFollowSpeed * Time.fixedDeltaTime
         );
 
         Quaternion rotationDifference =
-            Quaternion.Inverse(riflePlaceholder.rotation) * transform.rotation;
+            Quaternion.Inverse(targetRotation) * transform.rotation;
 
         rotationDifference.ToAngleAxis(
             out float angle,
@@ -62,25 +92,25 @@ public class Riflesway : MonoBehaviour
 
         if (Mathf.Abs(angle) > maxRotationAngle)
         {
-            angle = Mathf.Clamp(angle, -maxRotationAngle, maxRotationAngle);
+            float clampedAngle = Mathf.Clamp(
+                angle,
+                -maxRotationAngle,
+                maxRotationAngle
+            );
 
             transform.rotation =
-                riflePlaceholder.rotation *
-                Quaternion.AngleAxis(angle, axis);
+                targetRotation *
+                Quaternion.AngleAxis(clampedAngle, axis);
         }
-
     }
+
     public void IsAiming(bool aim)
     {
-        if (aim == false)
+        isAiming = aim;
+
+        if (playerMovement != null)
         {
-            riflePlaceholder = noAimPlacenholder;
-            playerMovement.CanRun = true;
-        }
-        else
-        {
-            riflePlaceholder = AimingPlaceholder;
-            playerMovement.CanRun = false;
+            playerMovement.CanRun = !aim;
         }
     }
 }
