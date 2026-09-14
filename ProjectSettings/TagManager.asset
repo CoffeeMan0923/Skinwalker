@@ -7,6 +7,10 @@ TagManager:
   - Waypoint
   - Deer
   - Wood
+  - Door
+  - Rifle
+  - Meat
+  - CookedMeat
   layers:
   - Default
   - TransparentFX
@@ -15,8 +19,8 @@ TagManager:
   - Water
   - UI
   - item
-  - 
-  - 
+  - player
+  - RaycastIgnore
   - 
   - 
   - 

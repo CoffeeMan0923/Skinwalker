@@ -6,6 +6,7 @@ public class Exitcar : MonoBehaviour
 {
     public bool CanExit = false;
     [SerializeField] private GameObject[] disableObjects;
+    [SerializeField] private GameObject[] enableObjects;
     [SerializeField] private GameObject player;
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip openDoor;
@@ -35,6 +36,11 @@ public class Exitcar : MonoBehaviour
         foreach(GameObject obj in disableObjects)
         {
             obj.SetActive(false);
+        }
+        player.SetActive(true);
+        foreach (GameObject obj in enableObjects)
+        {
+            obj.SetActive(true);
         }
         player.SetActive(true);
         StartCoroutine(exitSFX());

@@ -2,6 +2,11 @@ using UnityEngine;
 
 public class DaySystem : MonoBehaviour
 {
+    [SerializeField] private Fireplace firePlace;
+
+    [Header("Monster")]
+    [SerializeField] private SimpleMonsterAI monster;
+
     [Header("Light")]
     [SerializeField] private Light directionalLight;
 
@@ -36,12 +41,22 @@ public class DaySystem : MonoBehaviour
         TransitionToDay
     }
 
+    public bool IsNight
+    {
+        get
+        {
+            return currentPhase == Phase.TransitionToNight ||
+                   currentPhase == Phase.PureNight;
+        }
+    }
+
     private void Start()
     {
-
         if (directionalLight == null)
             directionalLight = GetComponent<Light>();
+
         directionalLight.shadowStrength = dayShadowStrength;
+
         ResetToBeginningOfDay();
     }
 
@@ -54,11 +69,17 @@ public class DaySystem : MonoBehaviour
                 currentPhase = Phase.PureNight;
                 time = 0f;
                 wasLockedOnNight = true;
+
+                if (monster != null)
+                    monster.SpawnMonster();
             }
 
             directionalLight.color = nightLightColor;
             directionalLight.intensity = nightIntensity;
             directionalLight.shadowStrength = nightShadowStrength;
+
+            if (firePlace != null)
+                firePlace.isNight = true;
 
             return;
         }
@@ -92,6 +113,9 @@ public class DaySystem : MonoBehaviour
 
     private void PureDay()
     {
+        if (firePlace != null)
+            firePlace.isNight = false;
+
         directionalLight.color = dayLightColor;
         directionalLight.intensity = dayIntensity;
         directionalLight.shadowStrength = dayShadowStrength;
@@ -129,6 +153,10 @@ public class DaySystem : MonoBehaviour
         {
             time = 0f;
             currentPhase = Phase.PureNight;
+
+            // NIGHT STARTED
+            if (monster != null)
+                monster.SpawnMonster();
         }
     }
 
@@ -138,15 +166,25 @@ public class DaySystem : MonoBehaviour
         directionalLight.intensity = nightIntensity;
         directionalLight.shadowStrength = nightShadowStrength;
 
+        if (firePlace != null)
+            firePlace.isNight = true;
+
         if (time >= pureNightLength)
         {
             time = 0f;
             currentPhase = Phase.TransitionToDay;
+
+            // DAY STARTING
+            if (monster != null)
+                monster.StartLeavingForDay();
         }
     }
 
     private void TransitionToDay()
     {
+        if (firePlace != null)
+            firePlace.isNight = false;
+
         float t = Mathf.Clamp01(time / transitionToDayLength);
 
         directionalLight.color = Color.Lerp(
@@ -183,5 +221,8 @@ public class DaySystem : MonoBehaviour
         directionalLight.color = dayLightColor;
         directionalLight.intensity = dayIntensity;
         directionalLight.shadowStrength = dayShadowStrength;
+
+        if (monster != null)
+            monster.HideMonster();
     }
 }

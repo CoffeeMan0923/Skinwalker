@@ -1,7 +1,6 @@
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
-using static UnityEditor.ShaderGraph.Internal.KeywordDependentCollection;
 
 public class Deer : MonoBehaviour
 {
@@ -11,6 +10,8 @@ public class Deer : MonoBehaviour
     [SerializeField] private float distance;
     private bool switchingWaypoint = false;
     private bool moveon;
+    [SerializeField] private GameObject meat;
+    [SerializeField] private GameObject hide;
 
     private int randomNum;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -60,6 +61,7 @@ public class Deer : MonoBehaviour
     }
     public void Damage()
     {
+        Instantiate(meat, gameObject.transform.position,gameObject.transform.rotation);
         Destroy(gameObject);
     }
     
